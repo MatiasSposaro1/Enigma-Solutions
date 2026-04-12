@@ -49,6 +49,7 @@
 html {
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
+    overflow-x: hidden;
 }
 
 body {
@@ -2593,11 +2594,14 @@ body.sidebar-open {
 }
 
 .animate-on-scroll[data-reveal="left"] {
+    opacity: 0;
     transform: translateX(-40px);
 }
 
 .animate-on-scroll[data-reveal="right"] {
+    opacity: 0;
     transform: translateX(40px);
+    will-change: transform, opacity;
 }
 
 .animate-on-scroll.visible {
