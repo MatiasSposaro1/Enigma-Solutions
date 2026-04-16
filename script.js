@@ -122,6 +122,79 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(updateProgress)
   }
 
+  // ─── Carrusel de Servicios ─────────────────
+  const servicesTrack = document.getElementById('servicesTrack')
+  const servicesPrev  = document.getElementById('servicesPrev')
+  const servicesNext  = document.getElementById('servicesNext')
+  const servicesDots  = document.querySelectorAll('.services-dot')
+
+  if (servicesTrack) {
+    const cards          = servicesTrack.querySelectorAll('.service-card')
+    const CARDS_VISIBLE  = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1
+    const totalCards     = cards.length                    // 6
+    const maxIndex       = totalCards - CARDS_VISIBLE      // cuánto se puede desplazar
+    const AUTO_DELAY     = 5000                            // 5 segundos
+    let   currentIndex   = 0
+    let   autoInterval
+
+    // Calcula el ancho de una card + gap y devuelve el offset en px
+    function getOffset(index) {
+      const card = cards[0]
+      const gap  = parseInt(getComputedStyle(servicesTrack).gap) || 24
+      return index * (card.offsetWidth + gap)
+    }
+
+    // Mueve el track al index indicado y actualiza los dots
+    function goToService(index) {
+      currentIndex = Math.max(0, Math.min(index, maxIndex))
+      servicesTrack.style.transform = `translateX(-${getOffset(currentIndex)}px)`
+
+      servicesDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex)
+      })
+    }
+
+    // Avanza al siguiente (loop al inicio cuando llega al final)
+    function nextService() {
+      goToService(currentIndex >= maxIndex ? 0 : currentIndex + 1)
+    }
+
+    // Retrocede al anterior (loop al final cuando está al inicio)
+    function prevService() {
+      goToService(currentIndex <= 0 ? maxIndex : currentIndex - 1)
+    }
+
+    // Inicia el auto-avance
+    function startServicesAuto() {
+      autoInterval = setInterval(nextService, AUTO_DELAY)
+    }
+
+    // Reinicia el auto-avance tras interacción manual
+    function resetServicesAuto() {
+      clearInterval(autoInterval)
+      startServicesAuto()
+    }
+
+    // Eventos de flechas
+    if (servicesPrev) {
+      servicesPrev.addEventListener('click', () => { prevService(); resetServicesAuto() })
+    }
+    if (servicesNext) {
+      servicesNext.addEventListener('click', () => { nextService(); resetServicesAuto() })
+    }
+
+    // Eventos de dots
+    servicesDots.forEach((dot, i) => {
+      dot.addEventListener('click', () => { goToService(i); resetServicesAuto() })
+    })
+
+    // Pausa al pasar el mouse por encima
+    servicesTrack.addEventListener('mouseenter', () => clearInterval(autoInterval))
+    servicesTrack.addEventListener('mouseleave', startServicesAuto)
+
+    startServicesAuto()
+  }
+
   // ─── Navbar Scroll ─────────────────────────
   function handleNavScroll() {
     const currentScroll = window.scrollY
