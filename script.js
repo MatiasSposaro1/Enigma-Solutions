@@ -83,6 +83,43 @@ import { ContactFormController } from './assets/js/contact-form.js'
     const SLIDE_DURATION = 6000
     let slideStartTime
 
+    // ─── Typewriter ────────────────────────────
+    const typingTargets = document.querySelectorAll('.typing-target')
+    const typingTexts = []
+    let typingTimeout
+
+    // Guarda los textos originales y los limpia del DOM
+    typingTargets.forEach((el) => {
+      typingTexts.push(el.textContent.trim())
+      el.textContent = ''
+    })
+
+    function startTyping(slideIndex) {
+      const target = slides[slideIndex]?.querySelector('.typing-target')
+      if (!target) return
+
+      // Limpia el cursor y texto del slide anterior
+      typingTargets.forEach((el) => el.classList.remove('typing-active'))
+      clearTimeout(typingTimeout)
+      target.textContent = ''
+
+      const text = typingTexts[slideIndex] || ''
+      const SPEED = 60 // ms por letra
+      let i = 0
+
+      // Espera a que el slide termine de entrar antes de arrancar
+      typingTimeout = setTimeout(function typeChar() {
+        if (i < text.length) {
+          target.textContent += text[i]
+          i++
+          typingTimeout = setTimeout(typeChar, SPEED)
+        } else {
+          // Escritura terminada — activa el cursor parpadeante
+          target.classList.add('typing-active')
+        }
+      }, 400)
+    }
+
     function goToSlide(index) {
       slides.forEach((s) => s.classList.remove('active'))
       dots.forEach((d) => d.classList.remove('active'))
@@ -92,6 +129,7 @@ import { ContactFormController } from './assets/js/contact-form.js'
       dots[currentSlide].classList.add('active')
       if (bgImgs[currentSlide]) bgImgs[currentSlide].classList.add('active')
       slideStartTime = Date.now()
+      startTyping(currentSlide)
     }
 
     function nextSlide() {
@@ -122,6 +160,7 @@ import { ContactFormController } from './assets/js/contact-form.js'
 
       startSlider()
       requestAnimationFrame(updateProgress)
+      startTyping(0)
     }
 
     // ─── Carrusel de Servicios ─────────────────
@@ -135,7 +174,7 @@ import { ContactFormController } from './assets/js/contact-form.js'
       const CARDS_VISIBLE =
         window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1
       const totalCards = cards.length // 6
-      const maxIndex = totalCards - CARDS_VISIBLE // cuánto se puede desplazar
+      const maxIndex = totalCards - CARDS_VISIBLE
       const AUTO_DELAY = 5000 // 5 segundos
       let currentIndex = 0
       let autoInterval
@@ -208,6 +247,29 @@ import { ContactFormController } from './assets/js/contact-form.js'
 
       startServicesAuto()
     }
+
+    // ─── Tilt 3D en Cards de Equipo ───────────
+    document.querySelectorAll('.team-card').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        const centerX = rect.width / 2
+        const centerY = rect.height / 2
+        const rotateX = ((y - centerY) / centerY) * -10 // máx ±10°
+        const rotateY = ((x - centerX) / centerX) * 10
+
+        card.style.transition = 'transform 0.05s ease, box-shadow 0.05s ease'
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(8px)`
+        card.style.boxShadow = `${-rotateY * 1.5}px ${rotateX * 1.5}px 30px rgba(59,130,246,0.15)`
+      })
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transition = 'transform 0.4s ease, box-shadow 0.4s ease'
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0)'
+        card.style.boxShadow = ''
+      })
+    })
 
     // ─── Navbar Scroll ─────────────────────────
     function handleNavScroll() {
@@ -303,13 +365,12 @@ import { ContactFormController } from './assets/js/contact-form.js'
         }
       }
 
-      // Use CSS custom property for the line height
       const style = document.createElement('style')
       style.textContent = `
-            #processLine::after {
-                height: var(--line-height, 0%) !important;
-            }
-        `
+        #processLine::after {
+          height: var(--line-height, 0%) !important;
+        }
+      `
       document.head.appendChild(style)
 
       window.addEventListener('scroll', updateProcessLine, { passive: true })
@@ -365,7 +426,6 @@ import { ContactFormController } from './assets/js/contact-form.js'
     function createParticles() {
       if (!particlesContainer) return
 
-      // Menos partículas en mobile para rendimiento
       const isMobile = window.innerWidth < 768
       const count = isMobile ? 15 : 40
 

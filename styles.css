@@ -723,6 +723,24 @@ body.sidebar-open {
     background-clip: text;
 }
 
+/* ── Cursor parpadeante del efecto typewriter ── */
+.typing-target.typing-active::after {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 0.8em;
+    background: var(--accent);
+    margin-left: 4px;
+    vertical-align: middle;
+    border-radius: 2px;
+    animation: blink-cursor 0.7s step-end infinite;
+}
+
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
 .hero-subtitle {
     font-size: clamp(1rem, 2vw, 1.2rem);
     color: var(--gray-400);
@@ -1499,9 +1517,11 @@ body.sidebar-open {
     background: var(--white);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
-    transition: all var(--transition);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
     position: relative;
     overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .team-card::before {
