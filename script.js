@@ -90,7 +90,7 @@ import { ContactFormController } from './assets/js/contact-form.js'
 
     // Guarda los textos originales y los limpia del DOM
     typingTargets.forEach((el) => {
-      typingTexts.push(el.textContent.trim())
+      typingTexts.push(el.textContent)
       el.textContent = ''
     })
 
@@ -171,10 +171,8 @@ import { ContactFormController } from './assets/js/contact-form.js'
 
     if (servicesTrack) {
       const cards = servicesTrack.querySelectorAll('.service-card')
-      const CARDS_VISIBLE =
-        window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1
-      const totalCards = cards.length // 6
-      const maxIndex = totalCards - CARDS_VISIBLE
+      const totalCards = cards.length // 7
+      const maxIndex = totalCards - 1  // recorre todas las cards individualmente
       const AUTO_DELAY = 5000 // 5 segundos
       let currentIndex = 0
       let autoInterval

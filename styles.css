@@ -1297,7 +1297,7 @@ body.sidebar-open {
 /* ── Wrapper del carrusel ── */
 .services-carousel {
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
     padding: 0 8px;
 }
 
@@ -2828,6 +2828,11 @@ body.sidebar-open {
         flex: 0 0 100%;
     }
 
+    /* Oculta los dots en mobile — no mapean bien con 7 cards de a 1 */
+    .services-dots {
+        display: none;
+    }
+
     .service-card-bg {
         height: 160px;
     }
@@ -2865,6 +2870,11 @@ body.sidebar-open {
 
     .team-card {
         padding: 24px 16px;
+    }
+
+    /* Oculta descripción desde tablet para abajo */
+    .team-card p {
+        display: none;
     }
 
     .team-avatar {
@@ -3220,12 +3230,17 @@ body.sidebar-open {
 
     /* ── Team ── */
     .team-grid {
-        max-width: 320px;
+        max-width: 100%;
         margin: 0 auto;
     }
 
     .team-card {
-        padding: 28px 20px;
+        padding: 24px 16px;
+    }
+
+    /* Oculta la descripción en mobile — queda foto, nombre y rol */
+    .team-card p {
+        display: none;
     }
 
     /* ── Timeline ── */
